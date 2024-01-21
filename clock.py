@@ -67,8 +67,11 @@ def get_time_index(time, time_list):
     return time_list.index(time)
 
 
-def lookup_radians(index):
-    return config.CLOCK_RADIAN_ANGLES[index]
+def lookup_radians(index, minutes_index=0):
+    minutes_fraction = config.MINUTES[minutes_index] / 60.0
+    hour_fraction = minutes_fraction * 5.0 / 60.0
+    hour_radians = hour_fraction * 2 * math.pi
+    return config.CLOCK_RADIAN_ANGLES[index] - hour_radians
 
 
 def clock(_):
@@ -76,10 +79,11 @@ def clock(_):
     draw_hour_ticks(clock)
     hour, minute = get_random_hour_minute_tuple()
 
-    hour_index = get_time_index(hour, config.HOURS)
     minute_index = get_time_index(minute, config.MINUTES)
-    hour_radians = lookup_radians(hour_index)
     minute_radians = lookup_radians(minute_index)
+    hour_index = get_time_index(hour, config.HOURS)
+    hour_radians = lookup_radians(hour_index)
+
     add_hand(clock, minute_radians, config.MINUTE_RADIUS, config.MINUTE_CHARACTER)
     add_hand(clock, hour_radians, config.HOUR_RADIUS, config.HOUR_CHARACTER)
 

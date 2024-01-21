@@ -5,6 +5,6 @@
 90	Binky
 80	Gussy Prouse
 80	Shark
+60	Fred
 50	Mick
 50	Smarty Pants
-50	Greg
