@@ -58,7 +58,7 @@ class Players:
 
 DIFFICULTY_LUT = {
     Players.evan: EASY,
-    Players.fred: HARD,
+    Players.fred: EASY,
     Players.nolan: HARD,
     Players.mick: IMPOSSIBLE,
     Players.melyssa: IMPOSSIBLE,

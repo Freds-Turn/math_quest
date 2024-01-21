@@ -16,7 +16,7 @@ def ask_question(first_number, op_str, second_number):
         return answer
 
 
-def get_actual_answer(first_number, op, second_number):
+def get_correct_answer(first_number, op, second_number):
     return int(op(first_number, second_number))
 
 
@@ -48,12 +48,11 @@ def get_first_number(number_size, op, second_number):
 
 
 def arith(play_data):
-    
     number_size = play_data[config.Keys.number_size]
     op = config.get_random_operation()
     op_str = config.get_operator_string(op)
     second_number = get_second_number(number_size)
     first_number = get_first_number(number_size, op, second_number)
     answer = ask_question(first_number, op_str, second_number)
-    correct_answer = get_actual_answer(first_number, op, second_number)
+    correct_answer = get_correct_answer(first_number, op, second_number)
     return answer, correct_answer

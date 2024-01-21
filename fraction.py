@@ -23,8 +23,8 @@ def ask_question(fraction1, op_str, fraction2):
     return answer
 
 
-def get_correct_answer(fraction1, fraction2):
-    correct_answer = fraction1 + fraction2
+def get_correct_answer(fraction1, operator, fraction2):
+    correct_answer = operator(fraction1, fraction2)
     return f"{correct_answer.numerator}/{correct_answer.denominator}"
 
 
@@ -35,5 +35,5 @@ def fraction(play_data):
     fraction1 = get_random_fraction(denominators)
     fraction2 = get_random_fraction(denominators)
     answer = ask_question(fraction1, op_str, fraction2)
-    correct_answer = get_correct_answer(fraction1, fraction2)
+    correct_answer = get_correct_answer(fraction1, op, fraction2)
     return answer, correct_answer
