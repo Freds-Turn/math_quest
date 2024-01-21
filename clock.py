@@ -2,30 +2,18 @@ import math
 import random
 
 from prettytable import PrettyTable
-from config import (
-    CLOCK_SIZE,
-    CLOCK_CENTRE,
-    CLOCK_RADIUS,
-    MINUTE_RADIUS,
-    HOUR_RADIUS,
-    EMPTY_CHARACTER,
-    MINUTE_CHARACTER,
-    HOUR_CHARACTER,
-    CLOCK_RADIAN_ANGLES,
-    HOURS,
-    MINUTES,
-)
+import config
 
 
 def convert_y_to_row(y):
-    return CLOCK_SIZE - y
+    return config.CLOCK_SIZE - y
 
 
 def draw_hour_ticks(clock):
-    radius = CLOCK_RADIUS
-    x_centre, y_centre = CLOCK_CENTRE
+    radius = config.CLOCK_RADIUS
+    x_centre, y_centre = config.CLOCK_CENTRE
 
-    for hour, angle_radians in zip(HOURS, CLOCK_RADIAN_ANGLES):
+    for hour, angle_radians in zip(config.HOURS, config.CLOCK_RADIAN_ANGLES):
         delta_x = math.cos(angle_radians) * radius
         delta_y = math.sin(angle_radians) * radius
 
@@ -37,14 +25,14 @@ def draw_hour_ticks(clock):
 
 
 def get_random_hour_minute_tuple():
-    hour = random.choice(HOURS)
-    minute = random.choice(MINUTES)
+    hour = random.choice(config.HOURS)
+    minute = random.choice(config.MINUTES)
     return hour, minute
 
 
 def add_hand(clock, angle_radians, hand_radius, hand_letter):
     radius = int(round(hand_radius)) + 1
-    x_centre, y_centre = CLOCK_CENTRE
+    x_centre, y_centre = config.CLOCK_CENTRE
     for r in range(radius):
         delta_x = math.cos(angle_radians) * r
         delta_y = math.sin(angle_radians) * r
@@ -58,8 +46,8 @@ def add_hand(clock, angle_radians, hand_radius, hand_letter):
 
 def get_blank_clock_list():
     clock_list = []
-    for _ in range(CLOCK_SIZE):
-        clock_list.append([EMPTY_CHARACTER for _ in range(CLOCK_SIZE)])
+    for _ in range(config.CLOCK_SIZE):
+        clock_list.append([config.EMPTY_CHARACTER for _ in range(config.CLOCK_SIZE)])
     return clock_list
 
 
@@ -80,7 +68,7 @@ def get_time_index(time, time_list):
 
 
 def lookup_radians(index):
-    return CLOCK_RADIAN_ANGLES[index]
+    return config.CLOCK_RADIAN_ANGLES[index]
 
 
 def clock(_):
@@ -88,12 +76,12 @@ def clock(_):
     draw_hour_ticks(clock)
     hour, minute = get_random_hour_minute_tuple()
 
-    hour_index = get_time_index(hour, HOURS)
-    minute_index = get_time_index(minute, MINUTES)
+    hour_index = get_time_index(hour, config.HOURS)
+    minute_index = get_time_index(minute, config.MINUTES)
     hour_radians = lookup_radians(hour_index)
     minute_radians = lookup_radians(minute_index)
-    add_hand(clock, minute_radians, MINUTE_RADIUS, MINUTE_CHARACTER)
-    add_hand(clock, hour_radians, HOUR_RADIUS, HOUR_CHARACTER)
+    add_hand(clock, minute_radians, config.MINUTE_RADIUS, config.MINUTE_CHARACTER)
+    add_hand(clock, hour_radians, config.HOUR_RADIUS, config.HOUR_CHARACTER)
 
     print_clock(clock)
     answer = input(

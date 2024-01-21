@@ -6,4 +6,5 @@
 80	Gussy Prouse
 80	Shark
 50	Mick
-40	Geoff
+50	Smarty Pants
+50	Greg

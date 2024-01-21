@@ -1,4 +1,6 @@
 import math
+import operator
+import random
 from enum import Enum, auto
 
 import arith
@@ -65,6 +67,13 @@ DIFFICULTY_LUT = {
 
 # ARITH
 NUMBER_SIZE = {EASY: 10, HARD: 12, IMPOSSIBLE: 200}
+OPERATIONS = (operator.add, operator.sub, operator.mul, operator.truediv)
+OP_STRINGS = {
+    operator.add: "+",
+    operator.sub: "-",
+    operator.mul: "X",
+    operator.truediv: "\u00F7",
+}
 
 # FRACTIONS
 DENOMINATORS = {
@@ -93,3 +102,11 @@ HOUR_CHARACTER = "H"
 class Keys(Enum):
     number_size = auto()
     denominators = auto()
+
+
+def get_random_operation():
+    return random.choice(OPERATIONS)
+
+
+def get_operator_string(operator):
+    return OP_STRINGS[operator]

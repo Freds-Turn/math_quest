@@ -4,23 +4,13 @@ import time
 from prettytable import PrettyTable
 
 import game_loop
-from config import (
-    COUNT_DOWN,
-    DENOMINATORS,
-    DIFFICULTY_LUT,
-    HARD,
-    HIGH_SCORE_FN,
-    MAX_HIGH_SCORES,
-    NUMBER_SIZE,
-    REPORTS,
-    Keys,
-)
+import config
 from game_loop import clear_screen
 
 
 def run_count_down_to_start():
     """counts down to the start of the game"""
-    count = COUNT_DOWN
+    count = config.COUNT_DOWN
     while count > -1:
         clear_screen()
         print(f"Game starting in: {count}")
@@ -31,7 +21,7 @@ def run_count_down_to_start():
 def get_high_scores_from_file():
     """returns a list of high score tuples (score, name)"""
     high_scores = []
-    with open(HIGH_SCORE_FN, "r") as f:
+    with open(config.HIGH_SCORE_FN, "r") as f:
         lines = f.readlines()
         for line in lines:
             high_score, name = line.split("\t")
@@ -44,7 +34,7 @@ def get_place_on_high_score_list(high_scores, score):
     for index, (high_score, _) in enumerate(high_scores):
         if score > high_score:
             return index + 1
-    if len(high_scores) < MAX_HIGH_SCORES:
+    if len(high_scores) < config.MAX_HIGH_SCORES:
         return len(high_scores) + 1
     return False
 
@@ -57,9 +47,9 @@ def update_high_scores_list(high_scores, score, name):
             high_scores.insert(index, (score, name))
             high_score_bool = True
             break
-    if len(high_scores) < MAX_HIGH_SCORES and not high_score_bool:
+    if len(high_scores) < config.MAX_HIGH_SCORES and not high_score_bool:
         high_scores.append((score, name))
-    if len(high_scores) > MAX_HIGH_SCORES:
+    if len(high_scores) > config.MAX_HIGH_SCORES:
         high_scores.pop()
 
 
@@ -75,7 +65,7 @@ def print_high_scores(high_scores):
 
 def delete_high_score_file():
     try:
-        os.remove(HIGH_SCORE_FN)
+        os.remove(config.HIGH_SCORE_FN)
     except FileNotFoundError:
         return
 
@@ -85,7 +75,7 @@ def save_high_scores_list_to_file(high_scores):
     save high scores list to file
     [(score, name), (score2, name2),...]
     """
-    with open(HIGH_SCORE_FN, "w") as f:
+    with open(config.HIGH_SCORE_FN, "w") as f:
         for index, (score, name) in enumerate(high_scores):
             f.write(f"{score}\t{name}")
             if index + 1 == len(high_scores):
@@ -113,7 +103,7 @@ def congratulate_high_score(high_score_place):
 
 def give_report_card(score):
     """returns None"""
-    for report_score, report in REPORTS:
+    for report_score, report in config.REPORTS:
         if score >= report_score:
             print(report)
             break
@@ -121,18 +111,18 @@ def give_report_card(score):
 
 def get_difficulty(name):
     upper_name = name.upper()
-    if upper_name not in DIFFICULTY_LUT:
-        return HARD
+    if upper_name not in config.DIFFICULTY_LUT:
+        return config.HARD
     else:
-        return DIFFICULTY_LUT[upper_name]
+        return config.DIFFICULTY_LUT[upper_name]
 
 
 def get_number_size(difficulty):
-    return NUMBER_SIZE[difficulty]
+    return config.NUMBER_SIZE[difficulty]
 
 
 def get_denominators(difficulty):
-    return DENOMINATORS[difficulty]
+    return config.DENOMINATORS[difficulty]
 
 
 def ask_for_players_name():
@@ -152,7 +142,10 @@ def main():
     difficulty = get_difficulty(name)
     number_size = get_number_size(difficulty)
     denominators = get_denominators(difficulty)
-    play_data = {Keys.number_size: number_size, Keys.denominators: denominators}
+    play_data = {
+        config.Keys.number_size: number_size,
+        config.Keys.denominators: denominators,
+    }
     run_count_down_to_start()
     score = game_loop.play_game_loop(play_data)
     high_score_place = get_place_on_high_score_list(high_scores, score)
