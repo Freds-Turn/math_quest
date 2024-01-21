@@ -2,20 +2,19 @@ import math
 import random
 
 from prettytable import PrettyTable
-
-CLOCK_SIZE = 20
-CLOCK_CENTRE = (CLOCK_SIZE / 2, CLOCK_SIZE / 2)
-CLOCK_RADIUS = CLOCK_SIZE / 2 - 1
-MINUTE_RADIUS = CLOCK_SIZE / 2 - 2
-HOUR_RADIUS = CLOCK_SIZE / 2 - 5
-
-EMPTY_CHARACTER = " "
-MINUTE_CHARACTER = "m"
-HOUR_CHARACTER = "H"
-
-CLOCK_RADIAN_ANGLES = [math.radians(a) for a in range(0, 360, 30)]
-HOURS = (3, 2, 1, 12, 11, 10, 9, 8, 7, 6, 5, 4)
-MINUTES = (15, 10, 5, 0, 55, 50, 45, 40, 35, 30, 25, 20)
+from config import (
+    CLOCK_SIZE,
+    CLOCK_CENTRE,
+    CLOCK_RADIUS,
+    MINUTE_RADIUS,
+    HOUR_RADIUS,
+    EMPTY_CHARACTER,
+    MINUTE_CHARACTER,
+    HOUR_CHARACTER,
+    CLOCK_RADIAN_ANGLES,
+    HOURS,
+    MINUTES,
+)
 
 
 def convert_y_to_row(y):
@@ -84,7 +83,7 @@ def lookup_radians(index):
     return CLOCK_RADIAN_ANGLES[index]
 
 
-def clock():
+def clock(_):
     clock = get_blank_clock_list()
     draw_hour_ticks(clock)
     hour, minute = get_random_hour_minute_tuple()

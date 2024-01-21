@@ -1,55 +1,21 @@
 import os
 import time
+
 from prettytable import PrettyTable
 
 import game_loop
-from game_loop import clear_screen
-
-COUNT_DOWN = 3
-
-
-EASY = "EASY"
-HARD = "HARD"
-IMPOSSIBLE = "IMPOSSIBLE"
-
-
-HIGH_SCORE_FN = "high_score.txt"
-MAX_HIGH_SCORES = 10
-
-
-class Players:
-    evan = "EVAN"
-    fred = "FRED"
-    nolan = "NOLAN"
-    mick = "MICK"
-    melyssa = "MELYSSA"
-    mom = "MOM"
-
-
-REPORTS = (
-    (220, f"okay Einstein, I get it, you're smarter than everyone else..."),
-    (180, f"What did you have for breakfast, Mathagetti???"),
-    (160, f"Do you know Geoff Smart?"),
-    (140, f"Sir Isaac Newton would be impressed!"),
-    (120, f"SOLID SCORE"),
-    (100, f"Holy crap, that was pretty quick."),
-    (80, f"Good Job."),
-    (60, f"baby steps"),
-    (40, f"NOT bad, but could still use some work.."),
-    (20, f"Yay, you got one!"),
-    (0, f"Better luck next time..."),
-    (-20, f"Slow down, you're just guessing."),
+from config import (
+    COUNT_DOWN,
+    DENOMINATORS,
+    DIFFICULTY_LUT,
+    HARD,
+    HIGH_SCORE_FN,
+    MAX_HIGH_SCORES,
+    NUMBER_SIZE,
+    REPORTS,
+    Keys,
 )
-
-DIFFICULTY_LUT = {
-    Players.evan: EASY,
-    Players.fred: HARD,
-    Players.nolan: HARD,
-    Players.mick: IMPOSSIBLE,
-    Players.melyssa: IMPOSSIBLE,
-    Players.mom: IMPOSSIBLE,
-}
-NUMBER_SIZE = {EASY: 10, HARD: 12, IMPOSSIBLE: 200}
+from game_loop import clear_screen
 
 
 def run_count_down_to_start():
@@ -153,13 +119,20 @@ def give_report_card(score):
             break
 
 
-def get_number_size(name):
+def get_difficulty(name):
     upper_name = name.upper()
     if upper_name not in DIFFICULTY_LUT:
-        difficulty = HARD
+        return HARD
     else:
-        difficulty = DIFFICULTY_LUT[upper_name]
+        return DIFFICULTY_LUT[upper_name]
+
+
+def get_number_size(difficulty):
     return NUMBER_SIZE[difficulty]
+
+
+def get_denominators(difficulty):
+    return DENOMINATORS[difficulty]
 
 
 def ask_for_players_name():
@@ -176,9 +149,12 @@ def main():
 
     clear_screen()
     name = ask_for_players_name()
-    number_size = get_number_size(name)
+    difficulty = get_difficulty(name)
+    number_size = get_number_size(difficulty)
+    denominators = get_denominators(difficulty)
+    play_data = {Keys.number_size: number_size, Keys.denominators: denominators}
     run_count_down_to_start()
-    score = game_loop.play_game_loop(number_size)
+    score = game_loop.play_game_loop(play_data)
     high_score_place = get_place_on_high_score_list(high_scores, score)
     update_high_scores_list(high_scores, score, name)
     delete_high_score_file()

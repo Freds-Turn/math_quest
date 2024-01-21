@@ -6,3 +6,4 @@
 80	Gussy Prouse
 80	Shark
 50	Mick
+40	Geoff

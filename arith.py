@@ -1,6 +1,8 @@
-import operator
 import math
+import operator
 import random
+
+from config import Keys
 
 OPERATIONS = (operator.add, operator.sub, operator.mul, operator.truediv)
 OP_STRINGS = {
@@ -50,7 +52,8 @@ def get_first_number(number_size, op, second_number):
         return first
 
 
-def arith(number_size):
+def arith(play_data):
+    number_size = play_data[Keys.number_size]
     op = get_random_operation()
     second_number = get_second_number(number_size)
     first_number = get_first_number(number_size, op, second_number)

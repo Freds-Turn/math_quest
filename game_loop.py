@@ -2,15 +2,12 @@ import os
 import random
 import time
 
-import arith
-import clock
-
-CORRECT_SCORE = 20
-INCORRECT_SCORE = -10
-
-CLOCK_PERCENTAGE = 0.2
-
-GAME_TIME = 30  # s
+from config import (
+    CORRECT_SCORE,
+    INCORRECT_SCORE,
+    QUESTION_TYPE,
+    GAME_TIME,
+)
 
 
 def correct(answer, correct_answer):
@@ -40,7 +37,7 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def play_game_loop(number_size):
+def play_game_loop(play_data):
     """number size represents the max size of the base integers being used"""
 
     score = 0
@@ -48,10 +45,10 @@ def play_game_loop(number_size):
     start_time = time.time()
     while time_played < GAME_TIME:
         clear_screen()
-        if random.random() < CLOCK_PERCENTAGE:
-            answer, correct_answer = clock.clock()
-        else:
-            answer, correct_answer = arith.arith(number_size)
+        for percent, game_type_func in QUESTION_TYPE:
+            if random.random() < percent:
+                answer, correct_answer = game_type_func(play_data)
+                break
 
         print_report(answer, correct_answer)
 
