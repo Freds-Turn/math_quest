@@ -97,7 +97,9 @@ def clock():
     add_hand(clock, hour_radians, HOUR_RADIUS, HOUR_CHARACTER)
 
     print_clock(clock)
-    answer = input(f"What time does the clock tell to the closest 5 minute ie.  1:05 ")
+    answer = input(
+        f"\nWhat time is it? Give to the nearest 5 minute increment,ie. 1:05\n"
+    )
     correct_answer = f"{hour}:{minute:02}"
     return answer, correct_answer
 

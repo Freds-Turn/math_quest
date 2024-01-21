@@ -27,10 +27,14 @@ class Players:
 
 
 REPORTS = (
-    (200, f"okay Einstein, I get it, you're smarter than everyone else..."),
+    (220, f"okay Einstein, I get it, you're smarter than everyone else..."),
+    (180, f"What did you have for breakfast, Mathagetti???"),
+    (160, f"Do you know Geoff Smart?"),
     (140, f"Sir Isaac Newton would be impressed!"),
+    (120, f"SOLID SCORE"),
     (100, f"Holy crap, that was pretty quick."),
-    (80, f"Good job."),
+    (80, f"Good Job."),
+    (60, f"baby steps"),
     (40, f"NOT bad, but could still use some work.."),
     (20, f"Yay, you got one!"),
     (0, f"Better luck next time..."),

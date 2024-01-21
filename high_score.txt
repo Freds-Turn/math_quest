@@ -1,9 +1,8 @@
 160	Zeus
+140	Fred
 120	Evan
-120	Fred
 100	Fred
 90	Binky
 80	Gussy Prouse
-60	Fred
-60	Fred
--10	Inky
+80	Shark
+50	Mick

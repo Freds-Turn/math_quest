@@ -8,7 +8,7 @@ import clock
 CORRECT_SCORE = 20
 INCORRECT_SCORE = -10
 
-CLOCK_PERCENTAGE = 0.5
+CLOCK_PERCENTAGE = 0.2
 
 GAME_TIME = 30  # s
 
@@ -27,12 +27,12 @@ def print_report(answer, correct_answer):
         print(f"ERRRRR, WRONG... the correct answer was: {correct_answer}")
 
 
-def update_score(correct_answer, score):
+def update_score(check_mark_boolean, score):
     """returns new score, based on correct answer boolean"""
-    if correct_answer:
+    if check_mark_boolean:
         score += CORRECT_SCORE
     else:
-        score -= INCORRECT_SCORE
+        score += INCORRECT_SCORE
     return score
 
 
