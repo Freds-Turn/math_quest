@@ -1,27 +1,20 @@
-import math
-import operator
 import os
-import random
 import time
+from prettytable import PrettyTable
 
-OPERATIONS = (operator.add, operator.sub, operator.mul, operator.truediv)
-OP_STRINGS = {
-    operator.add: "+",
-    operator.sub: "-",
-    operator.mul: "X",
-    operator.truediv: "\u00F7",
-}
+import game_loop
+from game_loop import clear_screen
 
 COUNT_DOWN = 3
-GAME_TIME = 30  # s
+
 
 EASY = "EASY"
 HARD = "HARD"
 IMPOSSIBLE = "IMPOSSIBLE"
 
-CORRECT_SCORE = 20
-INCORRECT_SCORE = -10
+
 HIGH_SCORE_FN = "high_score.txt"
+MAX_HIGH_SCORES = 10
 
 
 class Players:
@@ -33,22 +26,30 @@ class Players:
     mom = "MOM"
 
 
+REPORTS = (
+    (200, f"okay Einstein, I get it, you're smarter than everyone else..."),
+    (140, f"Sir Isaac Newton would be impressed!"),
+    (100, f"Holy crap, that was pretty quick."),
+    (80, f"Good job."),
+    (40, f"NOT bad, but could still use some work.."),
+    (20, f"Yay, you got one!"),
+    (0, f"Better luck next time..."),
+    (-20, f"Slow down, you're just guessing."),
+)
+
 DIFFICULTY_LUT = {
     Players.evan: EASY,
-    Players.fred: EASY,
+    Players.fred: HARD,
     Players.nolan: HARD,
     Players.mick: IMPOSSIBLE,
     Players.melyssa: IMPOSSIBLE,
     Players.mom: IMPOSSIBLE,
 }
-NUMBER_SIZE = {EASY: 10, HARD: 15, IMPOSSIBLE: 100}
+NUMBER_SIZE = {EASY: 10, HARD: 12, IMPOSSIBLE: 200}
 
 
-def clear_screen():
-    os.system("cls" if os.name == "nt" else "clear")
-
-
-def run_start_sequence():
+def run_count_down_to_start():
+    """counts down to the start of the game"""
     count = COUNT_DOWN
     while count > -1:
         clear_screen()
@@ -57,47 +58,95 @@ def run_start_sequence():
         count -= 1
 
 
-def print_and_get_high_score():
-    clear_screen()
+def get_high_scores_from_file():
+    """returns a list of high score tuples (score, name)"""
+    high_scores = []
     with open(HIGH_SCORE_FN, "r") as f:
-        line = f.readline()
-        high_score, name = line.split("\t")
-
-    print(f"{name.upper()} has the High Score with {high_score} points!")
-    time.sleep(3)
-    return high_score
-
-
-def save_high_score(score, name):
-    with open(HIGH_SCORE_FN, "w") as f:
-        f.write(f"{score}\t{name}")
+        lines = f.readlines()
+        for line in lines:
+            high_score, name = line.split("\t")
+            high_scores.append((int(high_score), name.strip()))
+    return high_scores
 
 
-def delete_high_score():
+def get_place_on_high_score_list(high_scores, score):
+    """returns the place, need to run this before scores are updated"""
+    for index, (high_score, _) in enumerate(high_scores):
+        if score > high_score:
+            return index + 1
+    if len(high_scores) < MAX_HIGH_SCORES:
+        return len(high_scores) + 1
+    return False
+
+
+def update_high_scores_list(high_scores, score, name):
+    """returns the place or False if they didn't make the list"""
+    high_score_bool = False
+    for index, (high_score, _) in enumerate(high_scores):
+        if score > high_score:
+            high_scores.insert(index, (score, name))
+            high_score_bool = True
+            break
+    if len(high_scores) < MAX_HIGH_SCORES and not high_score_bool:
+        high_scores.append((score, name))
+    if len(high_scores) > MAX_HIGH_SCORES:
+        high_scores.pop()
+
+
+def print_high_scores(high_scores):
+    table = PrettyTable()
+    table.field_names = ["Place", "Name", "Score"]
+    place = 1
+    for high_score, name in high_scores:
+        table.add_row([place, name, high_score])
+        place += 1
+    print(table)
+
+
+def delete_high_score_file():
     try:
         os.remove(HIGH_SCORE_FN)
     except FileNotFoundError:
         return
 
 
-def run_end_sequence(score, high_score, name):
-    clear_screen()
-    if score >= 200:
-        print(f"okay Einstein, I get it, you're smarter than everyone else...")
-    if score > high_score:
-        print(f"You have a NEW HIGH SCORE!!!")
-        delete_high_score()
-        save_high_score(score, name)
-        return
-    if score <= 0:
-        print(f"sorry, will have to work on your math skills...")
-    elif score >= 100:
-        print(f"holy crap, great job, you will soon beat that high score!")
+def save_high_scores_list_to_file(high_scores):
+    """
+    save high scores list to file
+    [(score, name), (score2, name2),...]
+    """
+    with open(HIGH_SCORE_FN, "w") as f:
+        for index, (score, name) in enumerate(high_scores):
+            f.write(f"{score}\t{name}")
+            if index + 1 == len(high_scores):
+                break
+            f.write("\n")
 
-    elif score >= 40:
-        print(f"NOT bad, but could still use some work..")
-    print(f"YOUR SCORE: {score}")
-    print(f"High Score: {high_score}")
+
+def ordinal(n):
+    if 10 <= n % 100 < 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return str(n) + suffix
+
+
+def congratulate_high_score(high_score_place):
+    """returns None"""
+    if high_score_place:
+        print(f"CONGRATULATIONS, you have a NEW HIGH SCORE!!!")
+        if high_score_place == 0:
+            print(f"You are the BEST of the BEST!!!")
+        else:
+            print(f"You are in {ordinal(high_score_place)} place.")
+
+
+def give_report_card(score):
+    """returns None"""
+    for report_score, report in REPORTS:
+        if score >= report_score:
+            print(report)
+            break
 
 
 def get_number_size(name):
@@ -109,94 +158,47 @@ def get_number_size(name):
     return NUMBER_SIZE[difficulty]
 
 
-def get_random_operation():
-    return random.choice(OPERATIONS)
-
-
-def ask_for_name():
-    clear_screen()
+def ask_for_players_name():
     return input("What is your first name?")
 
 
-def ask_question(first_number, op, second_number):
-    op_str = OP_STRINGS[op]
-    clear_screen()
-    while True:
-        answer = input(f"What is {first_number:,} {op_str} {second_number:,}?")
-        try:
-            answer = int(answer)
-        except ValueError:
-            print("value must be a valid integer, try again!")
-            continue
-        return answer
-
-
-def get_answer(first_number, op, second_number):
-    return int(op(first_number, second_number))
-
-
-def process_result_and_get_score(answer, correct_answer, score):
-    if int(answer) == correct_answer:
-        print(f"CORRECT")
-        score += CORRECT_SCORE
-    else:
-        print(f"INCORRECT, the correct answer is: {correct_answer}")
-        score += INCORRECT_SCORE
-    score = int(score)
-    print(f"SCORE: {score}")
-    time.sleep(1)
-    return score
-
-
-def get_random_numer(number_size):
-    rand = math.trunc(random.random() * number_size)
-    if rand == 0:
-        rand += 1
-    return rand
-
-
-def get_second_number(number_size):
-    return get_random_numer(number_size)
-
-
-def get_first_number(number_size, op, second_number):
-    first = get_random_numer(number_size)
-    if op == operator.truediv:
-        return second_number * first
-    else:
-        return first
-
-
 def main():
-    try:
-        high_score = int(print_and_get_high_score())
-    except FileNotFoundError:
-        high_score = 10
-    name = ask_for_name()
-    run_start_sequence()
+    """main entry to game"""
+    high_scores = get_high_scores_from_file()
+
+    clear_screen()
+    print_high_scores(high_scores)
+    time.sleep(3)
+
+    clear_screen()
+    name = ask_for_players_name()
     number_size = get_number_size(name)
-    score = 0.0
-    time_played = 0.0
-    start_time = time.time()
-    while time_played < GAME_TIME:
-        second_number = get_second_number(number_size)
-        op = get_random_operation()
-        first_number = get_first_number(number_size, op, second_number)
-        answer = ask_question(first_number, op, second_number)
-        correct_answer = get_answer(first_number, op, second_number)
-        # print(correct_answer, answer)
-        score = process_result_and_get_score(answer, correct_answer, score)
+    run_count_down_to_start()
+    score = game_loop.play_game_loop(number_size)
+    high_score_place = get_place_on_high_score_list(high_scores, score)
+    update_high_scores_list(high_scores, score, name)
+    delete_high_score_file()
+    save_high_scores_list_to_file(high_scores)
 
-        new_time = time.time()
-        time_played = new_time - start_time
+    clear_screen()
+    give_report_card(score)
+    time.sleep(1)
+    congratulate_high_score(high_score_place)
+    time.sleep(3)
 
-    run_end_sequence(score, high_score, name)
+    clear_screen()
+    print_high_scores(high_scores)
+
+
+def play_again():
+    y_or_n = input("\nDo you want to play again (y or n?)")
+    if y_or_n.upper() == "Y":
+        return True
+    print("Goodbye")
 
 
 if __name__ == "__main__":
     while True:
         main()
-        y_or_n = input("Do you want to play again (y or n?)")
-        if y_or_n.upper() == "Y":
-            continue
-        break
+        if not play_again():
+            break
