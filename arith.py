@@ -48,6 +48,7 @@ def get_first_number(number_size, op, second_number):
 
 
 def arith(play_data):
+    
     number_size = play_data[config.Keys.number_size]
     op = config.get_random_operation()
     op_str = config.get_operator_string(op)
